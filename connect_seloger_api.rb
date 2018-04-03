@@ -37,6 +37,11 @@ def display_listings_retrieved_by_seloger_api(type_bien, min_price, max_price, s
   puts "<<<<<<<<<<<<<<"
 end
 
+# buy
 display_listings_retrieved_by_seloger_api(1,0,200000,2,780043)
 display_listings_retrieved_by_seloger_api(1,200000,600000,2,780043)
 display_listings_retrieved_by_seloger_api(1,0,200000,2,750110)
+
+# rent
+display_listings_retrieved_by_seloger_api(1,0,200000,1,780043)
+display_listings_retrieved_by_seloger_api(1,0,200000,1,750110)
