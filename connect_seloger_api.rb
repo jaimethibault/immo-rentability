@@ -1,21 +1,41 @@
 require "rest-client"
 require 'nokogiri'
 
-response = RestClient.get "http://ws.seloger.com/search.xml?tri=initial&idtypebien=1&pxmax=200000&idtt=2,5&naturebien=1,2,4&ci=780043"
-document  = Nokogiri::XML(response)
+def display_listings_retrieved_by_seloger_api(type_bien, min_price, max_price, search_type, cp)
+  # arguments info for the method
+    # type_bien: Appartement: 1, Maison: 2
+    # min_price: 0
+    # max_price: 200000
+    # search_type: 2 #(1|2) renting or selling
+    # cp: 780043 # cp to codeInsee (https://public.opendatasoft.com/explore/dataset/correspondance-code-insee-code-postal/table/)
 
-puts ">>>>>>>>>>>>>>"
+  # building the request
+  base_url = "http://ws.seloger.com/search.xml?"
+  query = "idtypebien=#{type_bien}&pxmin=#{min_price}&pxmax=#{max_price}&idtt=#{search_type}&ci=#{cp}"
 
-document.root.xpath('annonces').each do |annonce|
-  annonce.xpath('annonce').each do |element|
-    idAnnonce   = element.xpath('idAnnonce').text
-    surface     = element.xpath('surface').text
-    prix        = element.xpath('prix').text
-    ville       = element.xpath('ville').text
-    cp          = element.xpath('cp').text
+  # calling the API
+  response = RestClient.get(base_url + query)
 
-    puts "#{idAnnonce} | #{prix.to_f.fdiv(surface.to_f).round(0)}€/m2 | #{surface}m2 pour #{prix}€ à #{cp} | #{ville}"
+  # parsing the response
+  document  = Nokogiri::XML(response)
+
+  # displaying data
+  puts ">>>>>>>>>>>>>>"
+
+  document.root.xpath('annonces').each do |annonce|
+    annonce.xpath('annonce').each do |element|
+      idAnnonce   = element.xpath('idAnnonce').text
+      surface     = element.xpath('surface').text
+      prix        = element.xpath('prix').text
+      ville       = element.xpath('ville').text
+      cp          = element.xpath('cp').text
+
+      puts "#{idAnnonce} | #{prix.to_f.fdiv(surface.to_f).round(0)}€/m2 | #{surface}m2 pour #{prix}€ à #{cp} | #{ville}"
+    end
   end
+
+  puts "<<<<<<<<<<<<<<"
 end
 
-puts "<<<<<<<<<<<<<<"
+display_listings_retrieved_by_seloger_api(1,0,200000,2,780043)
+display_listings_retrieved_by_seloger_api(1,200000,600000,2,780043)
